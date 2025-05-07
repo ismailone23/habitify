@@ -1,0 +1,1 @@
+ALTER TABLE "habit_option" ALTER COLUMN "max_streaks" SET DEFAULT 1;

@@ -1,40 +1,47 @@
-"use client";
-
-import React from "react";
+import { format } from "date-fns";
 import { View } from "react-native";
+import React from "react";
 
-type Props = {
-  data: number[]; // array of 7 * N days (e.g. 365 days)
-};
+interface HeatmapCell {
+  date: string;
+  count: number;
+}
+export default function TrackHeatMap({
+  data,
+  color,
+}: {
+  color: string;
+  data: HeatmapCell[];
+}) {
+  const weeks: HeatmapCell[][] = [];
 
-const getColorLevel = (count: number) => {
-  if (count === 0) return "bg-gray-200 dark:bg-gray-700";
-  if (count < 5) return "bg-green-100";
-  if (count < 10) return "bg-green-300";
-  if (count < 20) return "bg-green-500";
-  return "bg-green-700";
-};
-
-const TrackHeatMap: React.FC<Props> = ({ data }) => {
-  const weeks = Math.ceil(data.length / 7);
-  const grid: number[][] = Array.from({ length: weeks }, (_, i) =>
-    data.slice(i * 7, i * 7 + 7)
-  );
+  for (let i = 0; i < data.length; i += 7) {
+    weeks.push(data.slice(i, i + 7));
+  }
+  const today = format(new Date(), "yyyy-MM-dd");
+  const getColorLevel = (count: number) => {
+    if (count === 0) return `bg-${color}-100`;
+    if (count < 2) return `bg-${color}-300`;
+    if (count < 5) return `bg-${color}-500`;
+    return `bg-${color}-700`;
+  };
+  function isToday(wday: string): boolean {
+    return wday === today;
+  }
 
   return (
-    <View className="flex-row">
-      {grid.map((week, i) => (
-        <View key={i} className="flex-col mr-1">
-          {week.map((count, j) => (
-            <View
-              key={j}
-              className={`w-4 h-4 mb-1 rounded-sm ${getColorLevel(count)}`}
-            />
+    <View className="flex-row mt-2">
+      {weeks.map((week, i) => (
+        <View className="flex-col mr-[2px]" key={i}>
+          {week.map((wday, j) => (
+            <View className="flex-col mb-[2px]" key={j}>
+              <View
+                className={`w-2 h-2 ${getColorLevel(wday.count)} ${isToday(wday.date) ? `border border-zinc-500` : ""}`}
+              />
+            </View>
           ))}
         </View>
       ))}
     </View>
   );
-};
-
-export default TrackHeatMap;
+}

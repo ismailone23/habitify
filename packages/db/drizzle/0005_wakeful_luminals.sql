@@ -1,0 +1,1 @@
+ALTER TABLE "habit_option" ALTER COLUMN "created_at" SET NOT NULL;

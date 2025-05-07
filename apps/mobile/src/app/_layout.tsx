@@ -11,6 +11,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import "react-native-reanimated";
 import "../../global.css";
+import AuthProvider from "../providers/AuthProvider";
+import TRPcProvider from "../providers/TRPcProvider";
+import NewHabitProvider from "@/providers/newhabit-providers";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -19,20 +22,25 @@ export default function RootLayout() {
   });
 
   if (!loaded) {
-    // Async font loading only occurs in development.
     return null;
   }
 
   return (
     <GestureHandlerRootView>
-      <BottomSheetModalProvider>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <Stack screenOptions={{ headerShown: false }} />
-          <StatusBar style="dark" />
-        </ThemeProvider>
-      </BottomSheetModalProvider>
+      <TRPcProvider>
+        <AuthProvider>
+          <NewHabitProvider>
+            <BottomSheetModalProvider>
+              <ThemeProvider
+                value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+              >
+                <Stack screenOptions={{ headerShown: false }} />
+                <StatusBar style="dark" />
+              </ThemeProvider>
+            </BottomSheetModalProvider>
+          </NewHabitProvider>
+        </AuthProvider>
+      </TRPcProvider>
     </GestureHandlerRootView>
   );
 }

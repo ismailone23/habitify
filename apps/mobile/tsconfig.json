@@ -4,8 +4,11 @@
     "strict": true,
     "paths": {
       "@/*": [
-        "./*"
-      ]
+        "./src/*"
+      ],
+      "@repo/db": ["../../packages/db/src"],
+      "@repo/api": ["../../packages/api/src"],
+      "@repo/auth": ["../../packages/auth/src"],
     }
   },
   "include": [

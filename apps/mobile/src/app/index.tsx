@@ -1,15 +1,45 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import React from "react";
-import { ThemedText } from "../components/ThemedText";
+import {
+  View,
+  Text,
+  Alert,
+  ActivityIndicator,
+  TouchableHighlight,
+  Pressable,
+} from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
-import { ThemedView } from "../components/ThemedView";
+import { ThemedView } from "@/components/ThemedView";
+import { ThemedText } from "@/components/ThemedText";
+import { useAuth } from "@/providers/AuthProvider";
 
 export default function LandingPage() {
   const router = useRouter();
-  const handleRoute = () => {
-    router.push("/workspace");
-  };
+  const { isAuthenticated, signInAnonymously } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const check = async () => {
+      console.log(isAuthenticated);
+      if (isAuthenticated) {
+        router.replace("/workspace");
+      }
+    };
+    check();
+  }, [isAuthenticated]);
+
+  const handleSignIn = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      await signInAnonymously();
+      router.replace("/workspace");
+    } catch (error: any) {
+      return Alert.alert(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   return (
     <ThemedView className="w-full p-5 h-full items-center justify-center">
       <View className="flex-1 items-center justify-center">
@@ -23,15 +53,21 @@ export default function LandingPage() {
           asperiores inventore?
         </ThemedText>
       </View>
-      <TouchableOpacity
-        onPress={handleRoute}
-        activeOpacity={1}
-        className="mb-10 w-full py-4 rounded bg-sky-500"
-      >
-        <Text className="text-white text-center text-lg font-medium">
-          Continue With Habitify
-        </Text>
-      </TouchableOpacity>
+      <View className="mb-10 w-full">
+        <Pressable
+          onPress={handleSignIn}
+          disabled={isLoading}
+          className={`"mb-10 w-full py-4 rounded ${isLoading ? "bg-sky-300" : "bg-sky-500"}`}
+        >
+          {/* {isLoading ? (
+            <ActivityIndicator className="text-white" />
+          ) : ( */}
+          <Text className="text-white text-center text-lg font-medium">
+            Continue With Habitify
+          </Text>
+          {/* )} */}
+        </Pressable>
+      </View>
       <StatusBar hidden={false} />
     </ThemedView>
   );

@@ -1,8 +1,8 @@
 import { View, TouchableOpacity, Pressable } from "react-native";
 import React from "react";
-import { useHabit } from "../providers/newhabit-providers";
-import { colors } from "@/src/constants/Icons";
 import { ThemedText } from "../ThemedText";
+import { colors } from "@/constants/Icons";
+import { useHabit } from "@/providers/newhabit-providers";
 
 export default function ChooseColor() {
   const { selectedColor, setSelectedColor } = useHabit();

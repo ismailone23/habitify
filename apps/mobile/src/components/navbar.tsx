@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import CustomBottomSheetModal from "./bottom-sheet-modal";
 import NewHabit from "./newhabit/new-habit";
-import { useColorScheme } from "../hooks/useColorScheme";
+import { useColorScheme } from "@/hooks/useColorScheme.web";
 
 export default function Navbar() {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);

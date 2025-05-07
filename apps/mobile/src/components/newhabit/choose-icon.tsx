@@ -8,9 +8,9 @@ import {
   Pressable,
 } from "react-native";
 import IconShow from "./icon-show";
-import { activityIcons, iconsTray } from "@/src/constants/Icons";
-import { useHabit } from "../providers/newhabit-providers";
 import { ThemedText } from "../ThemedText";
+import { useHabit } from "@/providers/newhabit-providers";
+import { activityIcons, iconsTray } from "@/constants/Icons";
 
 export default function ChooseIcon() {
   const { icon, setIcon } = useHabit();
