@@ -11,20 +11,20 @@ import { Ionicons } from "@expo/vector-icons";
 import { ScrollView } from "react-native-gesture-handler";
 import TrackHeatMap from "./track-heatmap";
 import { buildDataForDots } from "../lib";
-import { HabitOptions, Habits } from "@repo/db/schema";
 import { trpc } from "@/utils/trpc";
+import { habitData } from "@repo/api/types";
 
-type habitData = {
-  habit: Habits;
-  habitOptions: HabitOptions[];
-};
-
-export default function HabitMap({ habit, habitOptions }: habitData) {
+export default function HabitMap({
+  habit,
+  habitOptions,
+  isCompletedToday,
+}: habitData) {
   const scrollRef = useRef<ScrollView>(null);
   const heatmapData = buildDataForDots({ habitId: habit.id, habitOptions });
   const utils = trpc.useUtils();
   const createOptionApi = trpc.habits.createHabitOption.useMutation();
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     setTimeout(() => {
       scrollRef.current?.scrollToEnd({ animated: false });
@@ -34,7 +34,10 @@ export default function HabitMap({ habit, habitOptions }: habitData) {
   const handleCreateOption = useCallback(async () => {
     setLoading(true);
     try {
-      await createOptionApi.mutateAsync({ habitId: habit.id });
+      await createOptionApi.mutateAsync({
+        habitId: habit.id,
+        isCompletedToday,
+      });
       utils.habits.getAllhabits.invalidate();
     } catch (error: any) {
       Alert.alert("on creating options", error.message);
@@ -42,7 +45,6 @@ export default function HabitMap({ habit, habitOptions }: habitData) {
       setLoading(false);
     }
   }, []);
-  console.log(habitOptions);
 
   return (
     <View className="flex p-3 rounded flex-col bg-white shadow-gray-500/50 shadow">
@@ -65,7 +67,7 @@ export default function HabitMap({ habit, habitOptions }: habitData) {
           <Pressable
             disabled={loading}
             onPress={handleCreateOption}
-            className={`w-14 h-14 justify-center items-center rounded-full border border-${habit.color}-300`}
+            className={`w-12 h-12 ${isCompletedToday ? `bg-${habit.color}-300` : `border border-${habit.color}-300`} justify-center items-center rounded-md`}
           >
             {loading ? (
               <ActivityIndicator size={24} />

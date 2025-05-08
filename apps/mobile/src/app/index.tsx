@@ -20,7 +20,6 @@ export default function LandingPage() {
 
   useEffect(() => {
     const check = async () => {
-      console.log(isAuthenticated);
       if (isAuthenticated) {
         router.replace("/workspace");
       }
@@ -59,13 +58,13 @@ export default function LandingPage() {
           disabled={isLoading}
           className={`"mb-10 w-full py-4 rounded ${isLoading ? "bg-sky-300" : "bg-sky-500"}`}
         >
-          {/* {isLoading ? (
+          {isLoading ? (
             <ActivityIndicator className="text-white" />
-          ) : ( */}
-          <Text className="text-white text-center text-lg font-medium">
-            Continue With Habitify
-          </Text>
-          {/* )} */}
+          ) : (
+            <Text className="text-white text-center text-lg font-medium">
+              Continue With Habitify
+            </Text>
+          )}
         </Pressable>
       </View>
       <StatusBar hidden={false} />

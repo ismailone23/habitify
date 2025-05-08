@@ -1,1 +1,7 @@
-export type { HabitOptions, Habits, User } from "@repo/db/schema";
+import { HabitOptions, Habits } from "@repo/db/schema";
+
+export type habitData = {
+  habit: Habits;
+  habitOptions: HabitOptions[];
+  isCompletedToday: boolean;
+};

@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { View } from "react-native";
 import React from "react";
 
-interface HeatmapCell {
+interface cellData {
   date: string;
   count: number;
 }
@@ -11,9 +11,9 @@ export default function TrackHeatMap({
   color,
 }: {
   color: string;
-  data: HeatmapCell[];
+  data: cellData[];
 }) {
-  const weeks: HeatmapCell[][] = [];
+  const weeks: cellData[][] = [];
 
   for (let i = 0; i < data.length; i += 7) {
     weeks.push(data.slice(i, i + 7));

@@ -30,10 +30,11 @@ export default function HabitContainer() {
       <View className="flex flex-col mt-3 gap-4 flex-1">
         {habits &&
           habits.length > 0 &&
-          habits.map(({ habit, habitOptions }, i) => (
+          habits.map(({ habit, habitOptions, isCompletedToday }, i) => (
             <HabitMap
               key={i}
               habit={habit}
+              isCompletedToday={isCompletedToday}
               habitOptions={habitOptions.filter(
                 (hasd) => hasd.habitId === habit.id
               )}
