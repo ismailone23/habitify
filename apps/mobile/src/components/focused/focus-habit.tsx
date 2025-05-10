@@ -8,9 +8,8 @@ import {
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import TrackHeatMap from "../track-heatmap";
-import { Pressable, ScrollView } from "react-native-gesture-handler";
+import { ScrollView } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
-import { TAILWIND_COLORS } from "@/constants/Icons";
 import { buildDataForDots, getTailwindColor } from "@/lib";
 import { useColorScheme } from "@/hooks/useColorScheme.web";
 import { useHabit } from "@/providers/newhabit-providers";
@@ -65,21 +64,22 @@ export default function FocusHabit() {
         habitId: habit.id,
         isCompletedToday,
       });
-      utils.habits.getAllhabits.invalidate();
-      utils.habits.getHabitWithId.invalidate();
+      await utils.habits.getHabitWithId.invalidate();
     } catch (error: any) {
       Alert.alert("On creating options", error.message);
     } finally {
+      await utils.habits.getAllhabits.invalidate();
       setLoading(false);
     }
   }, []);
 
-  const deleteHabitCallback = useCallback(() => {
+  const deleteHabitCallback = useCallback(async () => {
     setLoading(true);
     try {
       deleteHabitApi.mutate({ habitId: habit.id });
-      utils.habits.getAllhabits.invalidate();
-    } catch (error) {
+      await utils.habits.getAllhabits.invalidate();
+    } catch (error: any) {
+      Alert.alert("error on deleting habit", error.message);
     } finally {
       setLoading(false);
       setModalVisible(false);
@@ -147,9 +147,23 @@ export default function FocusHabit() {
             activeOpacity={0.9}
             style={styles(getTailwindColor(habit.color, 500)).action}
           >
-            <Text style={styles().textWhite}>
-              {isCompletedToday ? "Uncomplete" : "Complete"}
-            </Text>
+            {loading ? (
+              <ActivityIndicator color={"#fff"} size={22} />
+            ) : isCompletedToday ? (
+              <View
+                style={{ alignItems: "center", flexDirection: "row", gap: 2 }}
+              >
+                <Ionicons color={"#fff"} name="radio-button-off" size={22} />
+                <Text style={styles().textWhite}>Uncomplete</Text>
+              </View>
+            ) : (
+              <View
+                style={{ alignItems: "center", flexDirection: "row", gap: 2 }}
+              >
+                <Ionicons color={"#fff"} name="radio-button-on" size={22} />
+                <Text style={styles().textWhite}>Complete</Text>
+              </View>
+            )}
           </TouchableOpacity>
           <TouchableOpacity
             style={styles(getTailwindColor(habit.color, 300)).reminder}
