@@ -217,6 +217,13 @@ export const habitRouter = router({
         });
       return habitOption;
     }),
+  deleteHabit: protectedProcedure
+    .input(
+      z.object({
+        habitId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input: { habitId } }) => {}),
   updateHabitOption: protectedProcedure
     .input(
       z.object({
@@ -237,16 +244,18 @@ export const habitRouter = router({
           code: "FORBIDDEN",
           message: "You do not have access do this action.",
         });
-      const [habitOption] = await ctx.db
-        .update(habitOptions)
-        .set({ streak: currentStrak, timestamp })
+      const [deletedHabit] = await ctx.db
+        .delete(habits)
+        .where(eq(habits.id, habitId));
+      const [deletedHabitOpt] = await ctx.db
+        .delete(habitOptions)
         .where(eq(habitOptions.habitId, habitId))
         .returning();
-      if (!habitOption)
+      if (!deletedHabit || !deletedHabitOpt)
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Internal server error.",
         });
-      return habitOption;
+      return { deletedHabit, deletedHabitOpt };
     }),
 });
