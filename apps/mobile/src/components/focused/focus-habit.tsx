@@ -56,6 +56,8 @@ export default function FocusHabit() {
 
   const utils = trpc.useUtils();
   const createOptionApi = trpc.habits.createHabitOption.useMutation();
+  const deleteHabitApi = trpc.habits.deleteHabit.useMutation();
+
   const handleCreateOption = useCallback(async () => {
     setLoading(true);
     try {
@@ -69,6 +71,18 @@ export default function FocusHabit() {
       Alert.alert("On creating options", error.message);
     } finally {
       setLoading(false);
+    }
+  }, []);
+
+  const deleteHabitCallback = useCallback(() => {
+    setLoading(true);
+    try {
+      deleteHabitApi.mutate({ habitId: habit.id });
+      utils.habits.getAllhabits.invalidate();
+    } catch (error) {
+    } finally {
+      setLoading(false);
+      setModalVisible(false);
     }
   }, []);
 
@@ -162,7 +176,7 @@ export default function FocusHabit() {
           <TouchableOpacity>
             <Ionicons name="create-outline" size={25} />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={deleteHabitCallback}>
             <Ionicons name="trash-outline" color={"red"} size={25} />
           </TouchableOpacity>
         </View>

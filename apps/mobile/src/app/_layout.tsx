@@ -10,7 +10,6 @@ import { useColorScheme } from "../hooks/useColorScheme.web";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import "react-native-reanimated";
-import "../../global.css";
 import AuthProvider from "../providers/AuthProvider";
 import TRPcProvider from "../providers/TRPcProvider";
 import NewHabitProvider from "@/providers/newhabit-providers";
