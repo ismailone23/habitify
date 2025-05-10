@@ -20,7 +20,7 @@ export default function TrackHeatMap({
   }
   const today = format(new Date(), "yyyy-MM-dd");
   const getColorLevel = (count: number) => {
-    if (count === 0) return `bg-${color}-100`;
+    if (count === 0) return `bg-${color}-200/80`;
     if (count < 2) return `bg-${color}-300`;
     if (count < 5) return `bg-${color}-500`;
     return `bg-${color}-700`;

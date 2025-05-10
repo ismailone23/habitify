@@ -163,7 +163,6 @@ export const habitRouter = router({
               eq(sql`DATE(${habitOptions.timestamp})`, sql`CURRENT_DATE`)
             )
           );
-        console.log(habitOpt);
 
         if (habitOpt) {
           const [delhabitOpt] = await ctx.db

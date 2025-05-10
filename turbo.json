@@ -3,12 +3,18 @@
   "ui": "tui",
   "globalEnv": [
     "DATABASE_URL",
-    "NODE_ENV"
+    "NODE_ENV",
+    "JWT_SECRET"
   ],
   "tasks": {
     "build": {
       "dependsOn": [
         "^build"
+      ],
+      "env": [
+        "DATABASE_URL",
+        "NODE_ENV",
+        "JWT_SECRET"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",

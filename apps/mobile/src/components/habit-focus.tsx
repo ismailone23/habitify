@@ -1,29 +1,35 @@
 import {
   View,
   Text,
-  TouchableOpacity,
-  Pressable,
-  Alert,
   ActivityIndicator,
+  Pressable,
+  TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
 import { ScrollView } from "react-native-gesture-handler";
 import TrackHeatMap from "./track-heatmap";
-import { buildDataForDots } from "../lib";
+import { Ionicons } from "@expo/vector-icons";
+import { HabitOptions, Habits } from "@repo/db/schema";
 import { trpc } from "@/utils/trpc";
-import { habitData } from "@repo/api/types";
+import { buildDataForDots } from "@/lib";
 import { useColorScheme } from "@/hooks/useColorScheme.web";
 
-export default function HabitMap({
+export default function FocusedHabit({
   habit,
   habitOptions,
   isCompletedToday,
-}: habitData) {
-  const scrollRef = useRef<ScrollView>(null);
-  const heatmapData = buildDataForDots({ habitId: habit.id, habitOptions });
+}: {
+  habit: Habits;
+  habitOptions: HabitOptions[];
+  isCompletedToday: boolean;
+}) {
   const utils = trpc.useUtils();
   const createOptionApi = trpc.habits.createHabitOption.useMutation();
+
+  const scrollRef = useRef<ScrollView>(null);
+  const heatmapData = buildDataForDots({ habitId: habit.id, habitOptions });
+
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -37,7 +43,7 @@ export default function HabitMap({
     try {
       await createOptionApi.mutateAsync({
         habitId: habit.id,
-        isCompletedToday,
+        timestamp: new Date(),
       });
       utils.habits.getAllhabits.invalidate();
     } catch (error: any) {
@@ -47,7 +53,6 @@ export default function HabitMap({
     }
   }, []);
   const theme = useColorScheme();
-
   return (
     <View className="flex p-3 rounded flex-col bg-white dark:bg-neutral-800 shadow-gray-500/50 shadow">
       <View className="flex flex-row items-center justify-between w-full">
