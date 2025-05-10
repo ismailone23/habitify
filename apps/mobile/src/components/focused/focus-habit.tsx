@@ -19,9 +19,12 @@ import { habitData } from "@repo/api/types";
 export default function FocusHabit() {
   const { setModalVisible, setFocusHabitId, focusHabitId } = useHabit();
   if (!focusHabitId) return;
-  const { data, isLoading, error } = trpc.habits.getHabitWithId.useQuery({
-    id: focusHabitId,
-  });
+  const { data, isLoading, error } = trpc.habits.getHabitWithId.useQuery(
+    {
+      id: focusHabitId,
+    },
+    { enabled: !!focusHabitId }
+  );
   if (isLoading) {
     return <ActivityIndicator size={40} color={"black"} />;
   }
@@ -37,7 +40,7 @@ export default function FocusHabit() {
 
   const scrollRef = useRef<ScrollView>(null);
   const heatmapData = buildDataForDots({
-    habitId: habit.id,
+    habitId: focusHabitId,
     habitOptions: habitOptions,
   });
   const [loading, setLoading] = useState(false);
@@ -51,7 +54,7 @@ export default function FocusHabit() {
   const handleHabitFocus = useCallback(() => {
     setModalVisible(false);
     setFocusHabitId(null);
-  }, []);
+  }, [focusHabitId]);
 
   const utils = trpc.useUtils();
   const createOptionApi = trpc.habits.createHabitOption.useMutation();
@@ -61,7 +64,7 @@ export default function FocusHabit() {
     setLoading(true);
     try {
       await createOptionApi.mutateAsync({
-        habitId: habit.id,
+        habitId: focusHabitId,
         isCompletedToday,
       });
       await utils.habits.getHabitWithId.invalidate();
@@ -71,12 +74,12 @@ export default function FocusHabit() {
       await utils.habits.getAllhabits.invalidate();
       setLoading(false);
     }
-  }, []);
+  }, [focusHabitId]);
 
   const deleteHabitCallback = useCallback(async () => {
     setLoading(true);
     try {
-      deleteHabitApi.mutate({ habitId: habit.id });
+      deleteHabitApi.mutate({ habitId: focusHabitId });
       await utils.habits.getAllhabits.invalidate();
     } catch (error: any) {
       Alert.alert("error on deleting habit", error.message);
@@ -154,7 +157,7 @@ export default function FocusHabit() {
                 style={{ alignItems: "center", flexDirection: "row", gap: 2 }}
               >
                 <Ionicons color={"#fff"} name="radio-button-off" size={22} />
-                <Text style={styles().textWhite}>Uncomplete</Text>
+                <Text style={styles().textWhite}>Incomplete</Text>
               </View>
             ) : (
               <View
