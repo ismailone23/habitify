@@ -351,6 +351,9 @@ importers:
       drizzle-orm:
         specifier: ^0.43.1
         version: 0.43.1(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(gel@2.1.0)(postgres@3.4.5)
+      postgres:
+        specifier: ^3.4.5
+        version: 3.4.5
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -11539,8 +11542,7 @@ snapshots:
 
   postgres-range@1.1.4: {}
 
-  postgres@3.4.5:
-    optional: true
+  postgres@3.4.5: {}
 
   prelude-ls@1.2.1: {}
 
