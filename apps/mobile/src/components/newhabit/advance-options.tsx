@@ -1,4 +1,4 @@
-import { TouchableOpacity, View, Text } from "react-native";
+import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import React, { useCallback, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import AdvanceField from "./advance-fields";
@@ -11,26 +11,26 @@ export default function AdvanceOptions() {
   }, [setExpanded]);
 
   return (
-    <View className="my-5 flex flex-col">
-      <View className="flex items-center gap-x-2 flex-row">
-        <View className="flex-1 h-[1px] bg-gray-200" />
+    <View style={styles.container}>
+      <View style={styles.row}>
+        <View style={styles.divider} />
         <TouchableOpacity
           activeOpacity={1}
           onPress={handleExpand}
-          className="flex flex-row gap-x-1 items-center"
+          style={styles.rowGap1}
         >
-          <Text className="text-slate-700 text-lg">Advance (coming soon)</Text>
+          <Text style={styles.text}>Advance (coming soon)</Text>
           <Ionicons
             name={expanded ? "chevron-up-outline" : "chevron-down-outline"}
             color={"gray"}
             size={18}
           />
         </TouchableOpacity>
-        <View className="flex-1 h-[1px] bg-gray-200" />
+        <View style={styles.divider} />
       </View>
       {expanded && (
-        <View className="flex flex-col gap-2 w-full">
-          <View className="flex flex-row flex-1 w-full gap-x-5 justify-between">
+        <View style={styles.col}>
+          <View style={[styles.row, styles.justifyBetween]}>
             <AdvanceField title="Streak Goal" />
             <AdvanceField title="Reminder" />
           </View>
@@ -40,3 +40,45 @@ export default function AdvanceOptions() {
     </View>
   );
 }
+const styles = StyleSheet.create({
+  container: {
+    marginVertical: 20,
+    flexDirection: "column",
+  },
+  row: {
+    flexDirection: "row", // flex flex-row
+    alignItems: "center", // items-center
+    gap: 8, // gap-x-2 (1rem = 16px in default)
+  },
+  divider: {
+    flex: 1,
+    height: 1, // h-[1px]
+    backgroundColor: "#e5e7eb", // bg-gray-200
+  },
+  text: {
+    color: "#334155", // text-slate-700
+    fontSize: 18, // text-lg (1.125rem = 18px)
+  },
+  fullWidth: {
+    width: "100%", // w-full
+  },
+  flex1: {
+    flex: 1, // flex-1
+  },
+  gap2: {
+    gap: 8, // gap-2 (0.5rem = 8px)
+  },
+  justifyBetween: {
+    justifyContent: "space-between", // justify-between
+  },
+  rowGap1: {
+    flexDirection: "row", // flex-row
+    gap: 4, // gap-x-1 (0.25rem = 4px)
+    alignItems: "center", // items-center
+  },
+  col: {
+    flexDirection: "column", // flex-row
+    gap: 4, // gap-x-1 (0.25rem = 4px)
+    alignItems: "center", // items-center
+  },
+});

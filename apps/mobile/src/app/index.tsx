@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   TouchableHighlight,
   Pressable,
+  StyleSheet,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
@@ -40,30 +41,29 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <ThemedView className="w-full p-5 h-full items-center justify-center">
-      <View className="flex-1 items-center justify-center">
-        <Text className="text-xl dark:text-white py-5 font-bold">
-          Habitify - Your Habit Assistat
-        </Text>
-        <ThemedText className="text-center">
+    <ThemedView style={styles.themedView}>
+      <View style={styles.container}>
+        <Text style={styles.text}>Habitify - Your Habit Assistat</Text>
+        <ThemedText style={styles.ctext}>
           Lorem ipsum, dolor sit amet consectetur adipisicing elit. Animi
           pariatur minus delectus sit, earum, modi vel consectetur cupiditate
           nemo sunt vitae accusantium quam! Id recusandae modi et eaque sequi
           asperiores inventore?
         </ThemedText>
       </View>
-      <View className="mb-10 w-full">
+      <View style={styles.btnContainer}>
         <Pressable
           onPress={handleSignIn}
           disabled={isLoading}
-          className={`"mb-10 w-full py-4 rounded ${isLoading ? "bg-sky-300" : "bg-sky-500"}`}
+          style={[
+            styles.button,
+            isLoading ? styles.loading : styles.notLoading,
+          ]}
         >
           {isLoading ? (
-            <ActivityIndicator className="text-white" />
+            <ActivityIndicator />
           ) : (
-            <Text className="text-white text-center text-lg font-medium">
-              Continue With Habitify
-            </Text>
+            <Text style={styles.btnText}>Continue With Habitify</Text>
           )}
         </Pressable>
       </View>
@@ -71,3 +71,47 @@ export default function LandingPage() {
     </ThemedView>
   );
 }
+
+const styles = StyleSheet.create({
+  themedView: {
+    width: "100%",
+    height: "100%",
+    padding: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  text: {
+    fontSize: 20,
+    paddingVertical: 20,
+    fontWeight: "bold",
+  },
+  ctext: {
+    textAlign: "center",
+  },
+  btnContainer: {
+    width: "100%",
+  },
+  button: {
+    marginBottom: 40,
+    width: "100%",
+    paddingVertical: 16,
+    borderRadius: 8,
+  },
+  loading: {
+    backgroundColor: "#7dd3fc",
+  },
+  notLoading: {
+    backgroundColor: "#0ea5e9",
+  },
+  btnText: {
+    color: "#ffffff",
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "500",
+  },
+});

@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { Dispatch, SetStateAction } from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { ThemedText } from "../ThemedText";
 
 export default function IconShow({
@@ -15,15 +15,15 @@ export default function IconShow({
   setIcon: Dispatch<SetStateAction<string>>;
 }) {
   return (
-    <View className="flex gap-2 flex-col">
+    <View style={styles().flexColumnContainer}>
       <ThemedText>{title}</ThemedText>
-      <View className="flex-row flex-wrap gap-2">
+      <View style={styles().flexRowContainer}>
         {arr.map((iconName) => (
           <TouchableOpacity
             onPress={() => setIcon(iconName)}
             activeOpacity={1}
             key={iconName}
-            className={`w-12 h-12 border rounded-md border-slate-200 ${icon === iconName ? "bg-slate-200" : ""} items-center justify-center`}
+            style={styles(icon, iconName).iconContainer}
           >
             <Ionicons name={iconName as any} size={22} />
           </TouchableOpacity>
@@ -32,3 +32,30 @@ export default function IconShow({
     </View>
   );
 }
+const styles = (icon?: string, iconName?: string) =>
+  StyleSheet.create({
+    // Container with column layout and gap between items
+    flexColumnContainer: {
+      flexDirection: "column", // flex-col
+      gap: 8, // gap-2 = 2 * 4 = 8px
+    },
+
+    // Container with row layout, wrapping elements, and gap between them
+    flexRowContainer: {
+      flexDirection: "row", // flex-row
+      flexWrap: "wrap", // flex-wrap
+      gap: 8, // gap-2 = 2 * 4 = 8px
+    },
+
+    // Icon container with dynamic background based on icon matching
+    iconContainer: {
+      width: 40, // w-12 = 12 * 4 = 48px
+      height: 40, // h-12 = 12 * 4 = 48px
+      borderWidth: 1, // border
+      borderColor: "#E5E7EB", // border-slate-200
+      borderRadius: 8, // rounded-md (approximately 8px)
+      justifyContent: "center", // items-center
+      alignItems: "center", // justify-center
+      backgroundColor: icon === iconName ? "#E5E7EB" : "transparent", // bg-slate-200 conditional
+    },
+  });

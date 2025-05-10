@@ -6,6 +6,7 @@ import {
   View,
   Text,
   Pressable,
+  StyleSheet,
 } from "react-native";
 import IconShow from "./icon-show";
 import { ThemedText } from "../ThemedText";
@@ -30,20 +31,20 @@ export default function ChooseIcon() {
 
   return (
     <ScrollView>
-      <View className="flex flex-col">
-        <View className="flex gap-2 flex-col">
+      <View style={styles().container}>
+        <View style={styles().containerWithGap}>
           {expanded ? (
             <ThemedText>Activities</ThemedText>
           ) : (
             <ThemedText>Icon</ThemedText>
           )}
-          <View className="flex-row flex-wrap gap-2">
+          <View style={styles().rowContainer}>
             {visibleIcons.map((iconName) => (
               <TouchableOpacity
                 onPress={() => setIcon(iconName)}
                 activeOpacity={1}
                 key={iconName}
-                className={`w-12 h-12 border rounded-md border-slate-200 ${icon === iconName ? "bg-slate-200" : ""} items-center justify-center`}
+                style={styles(icon, iconName).iconContainer}
               >
                 <Ionicons name={iconName as any} size={22} />
               </TouchableOpacity>
@@ -51,15 +52,15 @@ export default function ChooseIcon() {
             {!expanded && (
               <Pressable
                 onPress={toggleIconCollapse}
-                className="w-12 h-12 rounded-md items-center justify-center bg-slate-200 dark:bg-slate-600"
+                style={styles().iconContainerDark}
               >
-                <Text className="text-lg font-bold">+</Text>
+                <Text style={styles().text}>+</Text>
               </Pressable>
             )}
           </View>
         </View>
         {expanded && (
-          <View className="flex flex-col mt-2 gap-y-2">
+          <View style={styles().verticalContainer}>
             {iconsTray.map((exIcon, i) => (
               <IconShow
                 key={i}
@@ -71,7 +72,7 @@ export default function ChooseIcon() {
             ))}
             <TouchableOpacity
               onPress={toggleIconCollapse}
-              className="w-12 mt-1 h-12 bg-red-300 flex items-center justify-center rounded-md  "
+              style={styles().redIconContainer}
             >
               <Ionicons size={22} name="remove-outline" />
             </TouchableOpacity>
@@ -81,3 +82,53 @@ export default function ChooseIcon() {
     </ScrollView>
   );
 }
+const styles = (icon?: string, iconName?: string) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: "column", // flex flex-col
+    },
+    containerWithGap: {
+      flexDirection: "column", // flex flex-col
+      gap: 8, // gap-2 = 2 * 4 = 8px
+    },
+    rowContainer: {
+      flexDirection: "row", // flex-row
+      flexWrap: "wrap", // flex-wrap
+      gap: 8, // gap-2 = 2 * 4 = 8px
+    },
+    iconContainer: {
+      width: 40, // w-12 = 12 * 4 = 48px
+      height: 40, // h-12 = 12 * 4 = 48px
+      borderWidth: 1, // border
+      borderColor: "#E5E7EB", // border-slate-200
+      borderRadius: 8, // rounded-md (approximately 8px)
+      justifyContent: "center", // items-center
+      alignItems: "center", // justify-center
+      backgroundColor: icon === iconName ? "#E5E7EB" : "transparent", // bg-slate-200 conditional
+    },
+    iconContainerDark: {
+      width: 40, // w-12 = 12 * 4 = 48px
+      height: 40, // h-12 = 12 * 4 = 48px
+      borderRadius: 8, // rounded-md (approximately 8px)
+      justifyContent: "center", // items-center
+      alignItems: "center", // justify-center
+      backgroundColor: "#4B5563", // dark:bg-slate-600
+    },
+    text: {
+      fontSize: 18, // text-lg
+      fontWeight: "700", // font-bold
+    },
+    verticalContainer: {
+      flexDirection: "column", // flex flex-col
+      marginTop: 8, // mt-2 = 2 * 4 = 8px
+      gap: 8, // gap-y-2 = 2 * 4 = 8px
+    },
+    redIconContainer: {
+      width: 36, // w-12 = 12 * 4 = 48px
+      height: 36, // h-12 = 12 * 4 = 48px
+      backgroundColor: "#F87171", // bg-red-300
+      borderRadius: 6, // rounded-md
+      justifyContent: "center", // items-center
+      alignItems: "center", // justify-center
+    },
+  });

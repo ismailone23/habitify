@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useCallback, useRef } from "react";
 import { ThemedView } from "./ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,26 +18,50 @@ export default function Navbar() {
   return (
     <ThemedView>
       <SafeAreaView>
-        <View className="flex flex-row justify-between items-center px-5">
-          <Text className="text-sky-500 font-medium text-xl">
-            Habit<Text className="text-neutral-900 dark:text-white">ify</Text>
+        <View style={styles.container}>
+          <Text style={[styles.text, styles.darkText]}>
+            Habit
+            <Text style={styles.lightText}>ify</Text>
           </Text>
           <View>
             <TouchableOpacity onPress={handleBottomSheet} activeOpacity={1}>
-              <Ionicons
-                name="add-circle-outline"
-                size={24}
-                color={theme === "light" ? "black" : "white"}
-              />
+              <Ionicons name="add-circle-outline" size={30} color={"#0ea5e9"} />
             </TouchableOpacity>
           </View>
         </View>
       </SafeAreaView>
       <CustomBottomSheetModal ref={bottomSheetModalRef}>
-        <BottomSheetView className="flex-1 items-center">
+        <BottomSheetView style={styles.bottomSheetContainer}>
           <NewHabit />
         </BottomSheetView>
       </CustomBottomSheetModal>
     </ThemedView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+  },
+  text: {
+    fontSize: 22,
+    fontWeight: "500",
+  },
+  lightText: {
+    color: "#0284c7",
+  },
+  darkText: {
+    color: "#111827",
+  },
+  darkMode: {
+    color: "#ffffff",
+  },
+  bottomSheetContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+});

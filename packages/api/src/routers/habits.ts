@@ -34,6 +34,32 @@ export const habitRouter = router({
 
     return data;
   }),
+  getHabitWithId: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input: { id } }) => {
+      const [habit] = await ctx.db
+        .select()
+        .from(habits)
+        .where(and(eq(habits.id, id), eq(habits.authorId, ctx.session.id)));
+      if (!habit) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "not found",
+        });
+      }
+      const habitOption = await ctx.db
+        .select()
+        .from(habitOptions)
+        .where(eq(habitOptions.habitId, id));
+
+      return {
+        habit: habit,
+        habitOptions: habitOption,
+        isCompletedToday:
+          habitOption.filter((op) => isSameDay(op.timestamp, new Date()))
+            .length > 0,
+      } as habitData;
+    }),
   createHabit: protectedProcedure
     .input(
       z.object({
@@ -140,59 +166,57 @@ export const habitRouter = router({
         isCompletedToday: z.boolean().default(false),
       })
     )
-    .mutation(
-      async ({ ctx, input: { habitId, timestamp, isCompletedToday } }) => {
-        const [isAuthor] = await ctx.db
-          .select()
-          .from(habits)
-          .where(
-            and(eq(habits.id, habitId), eq(habits.authorId, ctx.session.id))
-          );
-        if (!isAuthor)
-          throw new TRPCError({
-            code: "FORBIDDEN",
-            message: "You do not have access do this action.",
-          });
+    .mutation(async ({ ctx, input: { habitId, timestamp } }) => {
+      const [isAuthor] = await ctx.db
+        .select()
+        .from(habits)
+        .where(
+          and(eq(habits.id, habitId), eq(habits.authorId, ctx.session.id))
+        );
+      if (!isAuthor)
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You do not have access do this action.",
+        });
 
-        const [habitOpt] = await ctx.db
-          .select()
-          .from(habitOptions)
+      const [habitOpt] = await ctx.db
+        .select()
+        .from(habitOptions)
+        .where(
+          and(
+            eq(habitOptions.habitId, habitId),
+            eq(sql`DATE(${habitOptions.timestamp})`, sql`CURRENT_DATE`)
+          )
+        );
+
+      if (habitOpt) {
+        const [delhabitOpt] = await ctx.db
+          .delete(habitOptions)
           .where(
             and(
               eq(habitOptions.habitId, habitId),
-              eq(sql`DATE(${habitOptions.timestamp})`, sql`CURRENT_DATE`)
+              eq(habitOptions.id, habitOpt.id)
             )
-          );
-
-        if (habitOpt) {
-          const [delhabitOpt] = await ctx.db
-            .delete(habitOptions)
-            .where(
-              and(
-                eq(habitOptions.habitId, habitId),
-                eq(habitOptions.id, habitOpt.id)
-              )
-            )
-            .returning();
-          if (!delhabitOpt)
-            throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "Failed to update.",
-            });
-          return delhabitOpt;
-        }
-        const [habitOption] = await ctx.db
-          .insert(habitOptions)
-          .values({ habitId, timestamp })
+          )
           .returning();
-        if (!habitOption)
+        if (!delhabitOpt)
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: "Internal server error.",
+            message: "Failed to update.",
           });
-        return habitOption;
+        return delhabitOpt;
       }
-    ),
+      const [habitOption] = await ctx.db
+        .insert(habitOptions)
+        .values({ habitId, timestamp })
+        .returning();
+      if (!habitOption)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Internal server error.",
+        });
+      return habitOption;
+    }),
   updateHabitOption: protectedProcedure
     .input(
       z.object({

@@ -1,3 +1,4 @@
+import { TAILWIND_COLORS } from "@/constants/Icons";
 import { HabitOptions } from "@repo/db/schema";
 import {
   addDays,
@@ -50,4 +51,17 @@ export function buildDataForDots({
 
 function parseDate(dateStr: string) {
   return new Date(dateStr + "T00:00:00");
+}
+
+export type TailwindColorName = keyof typeof TAILWIND_COLORS;
+export type TailwindShade = keyof (typeof TAILWIND_COLORS)["red"];
+
+export function getTailwindColor(
+  color: string,
+  shade: number = 500
+): string | undefined {
+  if (color in TAILWIND_COLORS) {
+    return TAILWIND_COLORS[color as TailwindColorName][shade as TailwindShade];
+  }
+  return undefined;
 }
