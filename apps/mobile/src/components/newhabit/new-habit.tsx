@@ -11,7 +11,7 @@ import {
 import { BlurView } from "expo-blur";
 import React, { useCallback, useState } from "react";
 import { ThemedView } from "../ThemedView";
-import { useBottomSheet } from "@gorhom/bottom-sheet";
+// import { useBottomSheet } from "@gorhom/bottom-sheet";
 import ChooseIcon from "./choose-icon";
 import ChooseColor from "./choose-color";
 import AdvanceOptions from "./advance-options";
@@ -20,9 +20,10 @@ import { ScrollView } from "react-native-gesture-handler";
 import { ThemedText } from "../ThemedText";
 import { useHabit } from "@/providers/newhabit-providers";
 import { trpc } from "@/utils/trpc";
+import { router } from "expo-router";
 
 export default function NewHabit() {
-  const { close } = useBottomSheet();
+  // const { close } = useBottomSheet();
   const [basicData, setBasicData] = useState<{
     title: string;
     description: string;
@@ -44,10 +45,10 @@ export default function NewHabit() {
       });
       await utils.habits.getAllhabits.invalidate();
       setBasicData({ description: "", title: "" });
-      close({ duration: 1 });
     } catch (error: any) {
       Alert.alert("Occured problem on creating habit", error.message);
     } finally {
+      router.back();
       setLoading(false);
     }
   }, [basicData, createHabitApi, utils]);

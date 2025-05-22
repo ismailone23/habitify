@@ -7,6 +7,12 @@ export default function WorkspaceLayout() {
     <ThemedView>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="workspace" />
+        <Stack.Screen
+          name="modal"
+          options={{
+            presentation: "modal",
+          }}
+        />
       </Stack>
     </ThemedView>
   );

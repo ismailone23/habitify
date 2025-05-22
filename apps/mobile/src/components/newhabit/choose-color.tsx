@@ -38,7 +38,7 @@ const styles = (color?: string) =>
       flexDirection: "row", // flex-row
       marginTop: 8, // mt-2 = 2 * 4 = 8px
       flexWrap: "wrap", // flex-wrap
-      gap: 8, // gap-2 = 2 * 4 = 8px (spacing between items)
+      gap: 4, // gap-2 = 2 * 4 = 8px (spacing between items)
     },
     color: {
       width: 34, // w-10 = 10 * 4 = 40px

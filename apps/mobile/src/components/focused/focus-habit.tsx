@@ -19,23 +19,18 @@ import { habitData } from "@repo/api/types";
 export default function FocusHabit() {
   const { setModalVisible, setFocusHabitId, focusHabitId } = useHabit();
   if (!focusHabitId) return;
+  console.log(focusHabitId);
+
   const { data, isLoading, error } = trpc.habits.getHabitWithId.useQuery(
     {
       id: focusHabitId,
     },
     { enabled: !!focusHabitId }
   );
-  if (isLoading) {
-    return <ActivityIndicator size={40} color={"black"} />;
-  }
+  console.log(data);
 
-  if (!isLoading && !data) {
-    return (
-      <View>
-        <Text>{error?.message}</Text>
-      </View>
-    );
-  }
+  if (!isLoading && !data) return;
+
   const { habit, habitOptions, isCompletedToday } = data as habitData;
 
   const scrollRef = useRef<ScrollView>(null);
@@ -96,108 +91,128 @@ export default function FocusHabit() {
         { backgroundColor: theme === "dark" ? "#1f2937" : "#fff" },
       ]}
     >
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <View style={styles().infoRow}>
-          <TouchableOpacity
-            activeOpacity={1}
-            style={[
-              styles().iconCircle,
-              {
-                backgroundColor: getTailwindColor(habit.color, 500),
-                opacity: 0.8,
-              },
-            ]}
+      {isLoading ? (
+        <ActivityIndicator size={40} color={"black"} />
+      ) : (
+        <>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Ionicons
-              size={30}
-              name={habit.icon as any}
-              color={theme === "light" ? "black" : "white"}
-            />
-          </TouchableOpacity>
-          <View style={styles().textCol}>
-            <Text
-              style={[
-                styles().titleText,
-                { color: theme === "dark" ? "#d1d5db" : "#000" },
-              ]}
-              numberOfLines={1}
-            >
-              {habit.title}
-            </Text>
-            <Text
-              numberOfLines={1}
-              style={{ color: theme === "dark" ? "#d1d5db" : "#000" }}
-            >
-              {habit.description}
-            </Text>
+            <View style={styles().infoRow}>
+              <TouchableOpacity
+                activeOpacity={1}
+                style={[
+                  styles().iconCircle,
+                  {
+                    backgroundColor: getTailwindColor(habit.color, 500),
+                    opacity: 0.8,
+                  },
+                ]}
+              >
+                <Ionicons
+                  size={30}
+                  name={habit.icon as any}
+                  color={theme === "light" ? "black" : "white"}
+                />
+              </TouchableOpacity>
+              <View style={styles().textCol}>
+                <Text
+                  style={[
+                    styles().titleText,
+                    { color: theme === "dark" ? "#d1d5db" : "#000" },
+                  ]}
+                  numberOfLines={1}
+                >
+                  {habit.title}
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={{ color: theme === "dark" ? "#d1d5db" : "#000" }}
+                >
+                  {habit.description}
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity onPress={handleHabitFocus}>
+              <Ionicons name="close-outline" size={25} />
+            </TouchableOpacity>
           </View>
-        </View>
-        <TouchableOpacity onPress={handleHabitFocus}>
-          <Ionicons name="close-outline" size={25} />
-        </TouchableOpacity>
-      </View>
-      <ScrollView
-        ref={scrollRef}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-      >
-        <TrackHeatMap data={heatmapData} color={habit.color} />
-      </ScrollView>
-      <View style={{ flexDirection: "column", gap: 16 }}>
-        <View style={styles().actionContainer}>
-          <TouchableOpacity
-            onPress={handleCreateOption}
-            activeOpacity={0.9}
-            style={styles(getTailwindColor(habit.color, 500)).action}
+          <ScrollView
+            ref={scrollRef}
+            horizontal
+            showsHorizontalScrollIndicator={false}
           >
-            {loading ? (
-              <ActivityIndicator color={"#fff"} size={22} />
-            ) : isCompletedToday ? (
-              <View
-                style={{ alignItems: "center", flexDirection: "row", gap: 2 }}
+            <TrackHeatMap data={heatmapData} color={habit.color} />
+          </ScrollView>
+          <View style={{ flexDirection: "column", gap: 16 }}>
+            <View style={styles().actionContainer}>
+              <TouchableOpacity
+                onPress={handleCreateOption}
+                activeOpacity={0.9}
+                style={styles(getTailwindColor(habit.color, 500)).action}
               >
-                <Ionicons color={"#fff"} name="radio-button-off" size={22} />
-                <Text style={styles().textWhite}>Incomplete</Text>
-              </View>
-            ) : (
-              <View
-                style={{ alignItems: "center", flexDirection: "row", gap: 2 }}
+                {loading ? (
+                  <ActivityIndicator color={"#fff"} size={22} />
+                ) : isCompletedToday ? (
+                  <View
+                    style={{
+                      alignItems: "center",
+                      flexDirection: "row",
+                      gap: 2,
+                    }}
+                  >
+                    <Ionicons
+                      color={"#fff"}
+                      name="radio-button-off"
+                      size={22}
+                    />
+                    <Text style={styles().textWhite}>Incomplete</Text>
+                  </View>
+                ) : (
+                  <View
+                    style={{
+                      alignItems: "center",
+                      flexDirection: "row",
+                      gap: 2,
+                    }}
+                  >
+                    <Ionicons color={"#fff"} name="radio-button-on" size={22} />
+                    <Text style={styles().textWhite}>Complete</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles(getTailwindColor(habit.color, 300)).reminder}
               >
-                <Ionicons color={"#fff"} name="radio-button-on" size={22} />
-                <Text style={styles().textWhite}>Complete</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles(getTailwindColor(habit.color, 300)).reminder}
-          >
-            <Text>{habit.reminder ?? "Daily"}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles(getTailwindColor(habit.color, 300)).streak}
-          >
-            <Text>{habit.maxStraks}</Text>
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 10,
-          }}
-        >
-          <TouchableOpacity>
-            <Ionicons name="calendar-clear-outline" size={25} />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons name="create-outline" size={25} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={deleteHabitCallback}>
-            <Ionicons name="trash-outline" color={"red"} size={25} />
-          </TouchableOpacity>
-        </View>
-      </View>
+                <Text>{habit.reminder ?? "Daily"}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles(getTailwindColor(habit.color, 300)).streak}
+              >
+                <Text>{habit.maxStraks}</Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 10,
+              }}
+            >
+              <TouchableOpacity>
+                <Ionicons name="calendar-clear-outline" size={25} />
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Ionicons name="create-outline" size={25} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={deleteHabitCallback}>
+                <Ionicons name="trash-outline" color={"red"} size={25} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
+      )}
     </View>
   );
 }

@@ -22,6 +22,12 @@ export default function HabitContainer() {
     isError,
   } = trpc.habits.getAllhabits.useQuery();
 
+  
+  const { modalVisible, setModalVisible } = useHabit();
+  const handleHabitFocus = useCallback(() => {
+    setModalVisible((prev) => !prev);
+  }, [setModalVisible]);
+
   if (isLoading) {
     return (
       <View style={styles.container}>
@@ -37,10 +43,6 @@ export default function HabitContainer() {
       </View>
     );
   }
-  const { modalVisible, setModalVisible } = useHabit();
-  const handleHabitFocus = useCallback(() => {
-    setModalVisible((prev) => !prev);
-  }, [setModalVisible]);
   return (
     <>
       <FlatList

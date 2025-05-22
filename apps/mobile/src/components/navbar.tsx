@@ -1,20 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useCallback, useRef } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
 import { ThemedView } from "./ThemedView";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
-import CustomBottomSheetModal from "./bottom-sheet-modal";
-import NewHabit from "./newhabit/new-habit";
-import { useColorScheme } from "@/hooks/useColorScheme.web";
+import { Link } from "expo-router";
 
 export default function Navbar() {
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const handleBottomSheet = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, [bottomSheetModalRef]);
-  const theme = useColorScheme() ?? "light";
-
   return (
     <ThemedView>
       <SafeAreaView>
@@ -23,18 +14,11 @@ export default function Navbar() {
             Habit
             <Text style={styles.lightText}>ify</Text>
           </Text>
-          <View>
-            <TouchableOpacity onPress={handleBottomSheet} activeOpacity={1}>
-              <Ionicons name="add-circle-outline" size={30} color={"#0ea5e9"} />
-            </TouchableOpacity>
-          </View>
+          <Link href="/workspace/modal">
+            <Ionicons name="add-circle-outline" size={30} color={"#0ea5e9"} />
+          </Link>
         </View>
       </SafeAreaView>
-      <CustomBottomSheetModal ref={bottomSheetModalRef}>
-        <BottomSheetView style={styles.bottomSheetContainer}>
-          <NewHabit />
-        </BottomSheetView>
-      </CustomBottomSheetModal>
     </ThemedView>
   );
 }
@@ -59,9 +43,5 @@ const styles = StyleSheet.create({
   },
   darkMode: {
     color: "#ffffff",
-  },
-  bottomSheetContainer: {
-    flex: 1,
-    alignItems: "center",
   },
 });
