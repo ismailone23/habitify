@@ -33,7 +33,7 @@ export default function NewHabitProvider({
     reminderDays: [],
     reminderEnabled: false,
     reminderFrequency: "None",
-    reminderTime: dayjs(new Date().setHours(0, 0)).format("HH:mm"),
+    reminderTime: dayjs().startOf("day").format("HH:mm"),
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
 

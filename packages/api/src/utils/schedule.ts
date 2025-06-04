@@ -49,31 +49,43 @@ export async function scheduleReminder({
   };
 
   if (reminderFrequency === "Daily") {
-    await qstashClient.publishJSON({
-      url: `${BASE_URL}/api/reminder`,
-      body: baseBody,
-      schedule: `cron(${utcMinute} ${utcHour} * * ? *)`,
-    });
+    try {
+      await qstashClient.publishJSON({
+        url: `${BASE_URL}/api/reminder`,
+        body: baseBody,
+        schedule: `cron(${utcMinute} ${utcHour} * * ? *)`,
+      });
+    } catch (error: any) {
+      throw new Error(error);
+    }
   } else if (reminderFrequency === "Weekly") {
     const firstDay = reminderDays[0] ?? "Monday";
     const dayOfWeek = dayMap[firstDay] ?? "1"; // Monday = 1
-    await qstashClient.publishJSON({
-      url: `${BASE_URL}/api/reminder`,
-      body: baseBody,
-      schedule: `cron(${utcMinute} ${utcHour} ? * ${dayOfWeek} *)`,
-    });
+    try {
+      await qstashClient.publishJSON({
+        url: `${BASE_URL}/api/reminder`,
+        body: baseBody,
+        schedule: `cron(${utcMinute} ${utcHour} ? * ${dayOfWeek} *)`,
+      });
+    } catch (error: any) {
+      throw new Error(error);
+    }
   } else if (reminderFrequency === "Custom") {
-    await Promise.all(
-      reminderDays.map(async (day) => {
-        const dayOfWeek = dayMap[day];
-        if (!dayOfWeek) return;
+    try {
+      await Promise.all(
+        reminderDays.map(async (day) => {
+          const dayOfWeek = dayMap[day];
+          if (!dayOfWeek) return;
 
-        await qstashClient.publishJSON({
-          url: `${BASE_URL}/api/reminder`,
-          body: baseBody,
-          schedule: `cron(${utcMinute} ${utcHour} ? * ${dayOfWeek} *)`,
-        });
-      })
-    );
+          await qstashClient.publishJSON({
+            url: `${BASE_URL}/api/reminder`,
+            body: baseBody,
+            schedule: `cron(${utcMinute} ${utcHour} ? * ${dayOfWeek} *)`,
+          });
+        })
+      );
+    } catch (error: any) {
+      throw new Error(error);
+    }
   }
 }

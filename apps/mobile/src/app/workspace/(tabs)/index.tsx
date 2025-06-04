@@ -21,13 +21,13 @@ export default function Workspace() {
 
   useEffect(() => {
     const handlePushToken = async () => {
-      if (!user?.expoPushToken && expoPushToken) {
+      if (user && !user.expoPushToken && expoPushToken) {
         return await updateUserApi.mutateAsync({ expoPushToken });
       }
       return;
     };
     void handlePushToken();
-  }, [expoPushToken, updateUserApi, user?.expoPushToken]);
+  }, [expoPushToken, updateUserApi, user, user?.expoPushToken]);
 
   if (error) {
     <View style={{ paddingHorizontal: 16 }}>

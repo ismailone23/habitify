@@ -129,15 +129,24 @@ export const habitRouter = router({
         input.reminderFrequency !== "None" &&
         ctx.user.expoPushToken
       ) {
-        await scheduleReminder({
-          reminderDays: input.reminderDays,
-          reminderFrequency: input.reminderFrequency,
-          reminderTime: input.reminderTime,
-          timezone: input.timezone,
-          title: input.title,
-          body: `Did you Remember complete ${input.title} ?`,
-          pushToken: ctx.user.expoPushToken,
-        });
+        try {
+          await scheduleReminder({
+            reminderDays: input.reminderDays,
+            reminderFrequency: input.reminderFrequency,
+            reminderTime: input.reminderTime,
+            timezone: input.timezone,
+            title: input.title,
+            body: `Did you Remember complete ${input.title} ?`,
+            pushToken: ctx.user.expoPushToken,
+          });
+          console.log("scheduled");
+        } catch (error: any) {
+          console.log(error);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `${error}. scheduling`,
+          });
+        }
       }
 
       return habit;

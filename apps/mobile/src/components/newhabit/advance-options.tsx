@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import dayjs from "dayjs";
 import { Link } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -102,9 +101,7 @@ export default function AdvanceOptions() {
                 <Text>
                   {advanceFieldData.reminderFrequency}
                   {advanceFieldData.reminderFrequency !== "None" && (
-                    <Text>
-                      ({dayjs(advanceFieldData.reminderTime).format("HH:mm")})
-                    </Text>
+                    <Text>({advanceFieldData.reminderTime})</Text>
                   )}
                 </Text>
                 <Ionicons size={20} name="chevron-forward" />

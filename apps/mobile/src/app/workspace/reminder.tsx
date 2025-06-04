@@ -210,7 +210,7 @@ export default function Reminder() {
                   }}
                 >
                   <Text style={{ color: colors.primaryForeground }}>
-                    {dayjs(advanceFieldData.reminderTime).format("HH:mm")}
+                    {advanceFieldData.reminderTime}
                   </Text>
                 </Pressable>
 
