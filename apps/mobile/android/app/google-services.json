@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "891531979966",
+    "project_id": "hab-itly",
+    "storage_bucket": "hab-itly.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:891531979966:android:49272e509d457789ecc2ef",
+        "android_client_info": {
+          "package_name": "com.ismailone23.habitly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdpYLNBVLyDmz_pa58OG8C_4NC9dGX1WA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

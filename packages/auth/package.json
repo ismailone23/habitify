@@ -1,0 +1,30 @@
+{
+    "name": "@repo/auth",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "clean": "git clean -xdf dist .turbo node_modules"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@repo/db": "workspace:*",
+        "jsonwebtoken": "^9.0.2"
+    },
+    "devDependencies": {
+        "@repo/eslint-config": "workspace:*",
+        "@repo/typescript-config": "workspace:*",
+        "@types/jsonwebtoken": "^9.0.5",
+        "@types/node": "^20.11.13",
+        "dotenv-cli": "^7.3.0",
+        "esbuild": "^0.20.0",
+        "eslint": "^9.25.0",
+        "tsx": "^4.7.0",
+        "typescript": "5.8.2"
+    }
+}
