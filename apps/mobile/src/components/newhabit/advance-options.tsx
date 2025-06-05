@@ -83,7 +83,15 @@ export default function AdvanceOptions() {
             />
           </Pressable>
           <View style={{ flexDirection: "column", flex: 1, rowGap: 4 }}>
-            <Text style={{ fontSize: 16, fontWeight: 500 }}>Reminder</Text>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 500,
+                color: colors.foreground,
+              }}
+            >
+              Reminder
+            </Text>
             <Link asChild href={"/workspace/reminder"}>
               <Pressable
                 style={{
@@ -98,18 +106,32 @@ export default function AdvanceOptions() {
                   flexDirection: "row",
                 }}
               >
-                <Text>
+                <Text style={{ color: colors.foreground }}>
                   {advanceFieldData.reminderFrequency}
                   {advanceFieldData.reminderFrequency !== "None" && (
-                    <Text>({advanceFieldData.reminderTime})</Text>
+                    <Text style={{ color: colors.foreground }}>
+                      ({advanceFieldData.reminderTime})
+                    </Text>
                   )}
                 </Text>
-                <Ionicons size={20} name="chevron-forward" />
+                <Ionicons
+                  size={20}
+                  name="chevron-forward"
+                  color={colors.foreground}
+                />
               </Pressable>
             </Link>
           </View>
           <View style={{ flexDirection: "column", flex: 1, rowGap: 4 }}>
-            <Text style={{ fontSize: 16, fontWeight: 500 }}>Categories</Text>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 500,
+                color: colors.foreground,
+              }}
+            >
+              Categories
+            </Text>
             <Pressable
               style={{
                 width: "100%",
@@ -123,8 +145,12 @@ export default function AdvanceOptions() {
                 flexDirection: "row",
               }}
             >
-              <Text>None</Text>
-              <Ionicons size={20} name="chevron-forward" />
+              <Text style={{ color: colors.foreground }}>None</Text>
+              <Ionicons
+                size={20}
+                color={colors.foreground}
+                name="chevron-forward"
+              />
             </Pressable>
           </View>
         </View>

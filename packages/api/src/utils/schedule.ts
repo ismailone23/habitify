@@ -1,4 +1,11 @@
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+
 import { qstashClient } from "../qstash";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface ReminderPayload {
   title: string;
@@ -25,16 +32,26 @@ export async function scheduleReminder({
   body: string;
   pushToken: string;
 }) {
-  const [hour, minute] = reminderTime.split(":").map(Number);
+  const [hourStr, minuteStr] = reminderTime.split(":");
 
-  const timeInUTC = new Date(
-    new Date()
-      .toLocaleString("en-US", { timeZone: timezone })
-      .replace(/(\d+):(\d+)/, `${hour}:${minute}`)
-  ).toISOString();
+  // Validate first
+  if (!hourStr || !minuteStr) {
+    throw new Error(`Invalid reminderTime format: "${reminderTime}"`);
+  }
 
-  const utcHour = new Date(timeInUTC).getUTCHours();
-  const utcMinute = new Date(timeInUTC).getUTCMinutes();
+  const hour = Number(hourStr);
+  const minute = Number(minuteStr);
+
+  if (isNaN(hour) || isNaN(minute)) {
+    throw new Error(`Invalid reminderTime value: "${reminderTime}"`);
+  }
+
+  const now = dayjs().tz(timezone);
+  const scheduledTime = now.hour(hour).minute(minute).second(0);
+
+  // Get UTC time components
+  const utcHour = scheduledTime.utc().hour();
+  const utcMinute = scheduledTime.utc().minute();
 
   const baseBody: ReminderPayload = { body, title, pushToken };
 

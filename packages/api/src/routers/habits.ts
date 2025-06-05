@@ -106,7 +106,7 @@ export const habitRouter = router({
         reminderFrequency: z
           .enum(["Daily", "Weekly", "Custom", "None"])
           .default("None"),
-        reminderTime: z.string(),
+        reminderTime: z.string().regex(/^\d{2}:\d{2}$/, "Invalid time format"),
         reminderDays: z.array(z.string()),
         timezone: z.string(),
       })

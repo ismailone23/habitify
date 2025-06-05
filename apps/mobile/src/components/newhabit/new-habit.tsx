@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -237,7 +236,6 @@ export default function NewHabit() {
           )}
         </TouchableOpacity>
       </View>
-      <StatusBar hidden />
     </View>
   );
 }
