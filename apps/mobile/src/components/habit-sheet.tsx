@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Link } from "expo-router";
 import type { Dispatch, SetStateAction } from "react";
 import React, {
@@ -10,7 +10,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { ActivityIndicator, Alert, Text } from "react-native";
+import { ActivityIndicator, Alert, Text, View } from "react-native";
 import type { DateData } from "react-native-calendars";
 import { Calendar } from "react-native-calendars";
 import { Pressable } from "react-native-gesture-handler";
@@ -86,12 +86,7 @@ const HabitSheet = forwardRef<BottomSheetModal, HabitSheetProps>(
           setLoading(false);
         }
       },
-      [
-        archiveHabit,
-        setSheetId,
-        utils.habits.getAllhabits,
-        // utils.habits.getHabitWithId,
-      ]
+      [archiveHabit, setSheetId, utils.habits.getAllhabits]
     );
     const handleEdit = useCallback(
       (id: string | null) => {
@@ -131,9 +126,9 @@ const HabitSheet = forwardRef<BottomSheetModal, HabitSheetProps>(
           ref={sheetRef}
           snapPoints={["40%"]}
         >
-          <BottomSheetView style={{ backgroundColor: colors.background }}>
+          <View style={{ backgroundColor: colors.background }}>
             <ActivityIndicator size={30} color={"blue"} />
-          </BottomSheetView>
+          </View>
         </BottomSheetModal>
       );
     }
@@ -146,9 +141,9 @@ const HabitSheet = forwardRef<BottomSheetModal, HabitSheetProps>(
           ref={sheetRef}
           snapPoints={["40%"]}
         >
-          <BottomSheetView>
+          <View>
             <Text>Failed to fetch</Text>
-          </BottomSheetView>
+          </View>
         </BottomSheetModal>
       );
     }
@@ -177,83 +172,87 @@ const HabitSheet = forwardRef<BottomSheetModal, HabitSheetProps>(
         {error ? (
           <Text>{error.message}</Text>
         ) : (
-          <BottomSheetView style={{ paddingHorizontal: defaultSpacing * 2 }}>
-            <BottomSheetView>
-              <BottomSheetView
+          <View
+            style={{
+              paddingHorizontal: defaultSpacing * 2,
+              flexDirection: "column",
+              width: "100%",
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                columnGap: defaultSpacing,
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <Pressable
                 style={{
-                  flexDirection: "row",
-                  columnGap: defaultSpacing,
-                  alignItems: "flex-start",
+                  backgroundColor: getTailwindColor(habit.color, 500),
+                  padding: 8,
+                  borderRadius: 5,
                 }}
               >
-                <Pressable
+                <Ionicons
+                  size={30}
+                  name={habit.icon as any}
+                  color={colors.foreground}
+                />
+              </Pressable>
+              <View style={{ flexDirection: "column", flex: 1 }}>
+                <Text
                   style={{
-                    backgroundColor: getTailwindColor(habit.color, 500),
-                    padding: 8,
-                    borderRadius: 5,
+                    fontSize: 18,
+                    color: colors.foreground,
+                    fontFamily: "Roboto",
                   }}
                 >
-                  <Ionicons
-                    size={30}
-                    name={habit.icon as any}
-                    color={colors.foreground}
-                  />
-                </Pressable>
-                <BottomSheetView style={{ flexDirection: "column", flex: 1 }}>
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      color: colors.foreground,
-                      fontFamily: "Roboto",
-                    }}
-                  >
-                    {habit.title}
-                  </Text>
-                  <Text
-                    style={{ color: colors.foreground, fontFamily: "Roboto" }}
-                  >
-                    {habit.description}
-                  </Text>
-                </BottomSheetView>
-                <BottomSheetView
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    paddingVertical: defaultSpacing,
-                    columnGap: 5,
-                  }}
+                  {habit.title}
+                </Text>
+                <Text
+                  style={{ color: colors.foreground, fontFamily: "Roboto" }}
                 >
-                  <Link asChild href={"/workspace/new-habit-modal"}>
-                    <Pressable onPress={() => handleEdit(sheetId)}>
-                      <Ionicons
-                        name="create-outline"
-                        color={colors.foreground}
-                        size={25}
-                      />
-                    </Pressable>
-                  </Link>
-                  <Pressable
-                    onPress={() => archiveHabitCallback(sheetId)}
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <ActivityIndicator size={25} color={"blue"} />
-                    ) : (
-                      <Ionicons
-                        size={25}
-                        color={colors.destructive}
-                        name="archive-outline"
-                      />
-                    )}
+                  {habit.description}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingVertical: defaultSpacing,
+                  columnGap: 5,
+                }}
+              >
+                <Link asChild href={"/workspace/new-habit-modal"}>
+                  <Pressable onPress={() => handleEdit(sheetId)}>
+                    <Ionicons
+                      name="create-outline"
+                      color={colors.foreground}
+                      size={25}
+                    />
                   </Pressable>
-                </BottomSheetView>
-              </BottomSheetView>
-            </BottomSheetView>
-            <BottomSheetView>
-              <TrackHeatMap data={heatmapData} color={habit.color} />
-            </BottomSheetView>
-            <BottomSheetView style={{ marginTop: defaultSpacing }}>
+                </Link>
+                <Pressable
+                  onPress={() => archiveHabitCallback(sheetId)}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <ActivityIndicator size={25} color={"blue"} />
+                  ) : (
+                    <Ionicons
+                      size={25}
+                      color={colors.destructive}
+                      name="archive-outline"
+                    />
+                  )}
+                </Pressable>
+              </View>
+            </View>
+            <TrackHeatMap data={heatmapData} color={habit.color} />
+            <View style={{ marginTop: defaultSpacing }}>
               <Calendar
                 theme={{
                   backgroundColor: isDark
@@ -271,8 +270,8 @@ const HabitSheet = forwardRef<BottomSheetModal, HabitSheetProps>(
                 markedDates={markedDates}
                 onDayPress={(day) => handleCalender(day, sheetId)}
               />
-            </BottomSheetView>
-          </BottomSheetView>
+            </View>
+          </View>
         )}
       </BottomSheetModal>
     );

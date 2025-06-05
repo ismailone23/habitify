@@ -1,6 +1,8 @@
 import { habitOptions, habits } from "@repo/db/schema";
 import { TRPCError } from "@trpc/server";
 import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 
@@ -8,6 +10,8 @@ import { protectedProcedure, router } from "../trpc";
 import type { habitData } from "../types";
 import { scheduleReminder } from "../utils/schedule";
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
 export const habitRouter = router({
   getAllhabits: protectedProcedure
     .input(z.object({ isArchived: z.boolean().default(false) }))
@@ -159,44 +163,84 @@ export const habitRouter = router({
         description: z.string().optional(),
         color: z.string().optional(),
         icon: z.string().optional(),
-        maxStraks: z.number().default(1).optional(),
-        reminder: z.string().optional(),
+        maxStreaks: z.number().default(1).optional(),
         habitId: z.string(),
         categoryId: z.string().optional(),
+        reminderEnabled: z.boolean().optional(),
+        reminderFrequency: z
+          .enum(["Daily", "Weekly", "Custom", "None"])
+          .default("None"),
+        reminderTime: z
+          .string()
+          .regex(/^\d{2}:\d{2}$/, "Invalid time format")
+          .optional(),
+        reminderDays: z.array(z.string()),
+        timezone: z.string().optional(),
       })
     )
-    .mutation(async ({ ctx, input }) => {
-      const [isAuthor] = await ctx.db
-        .select()
-        .from(habits)
-        .where(
-          and(eq(habits.id, input.habitId), eq(habits.authorId, ctx.session.id))
-        );
+    .mutation(
+      async ({
+        ctx,
+        input: {
+          habitId,
+          reminderDays,
+          reminderFrequency,
+          categoryId,
+          color,
+          description,
+          icon,
+          maxStreaks,
+          reminderEnabled,
+          reminderTime,
+          timezone,
+          title,
+        },
+      }) => {
+        const [isAuthor] = await ctx.db
+          .select()
+          .from(habits)
+          .where(
+            and(eq(habits.id, habitId), eq(habits.authorId, ctx.session.id))
+          );
 
-      if (!isAuthor) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You do not have access do this action.",
-        });
+        if (!isAuthor) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "You do not have access do this action.",
+          });
+        }
+
+        const [habit] = await ctx.db
+          .update(habits)
+          .set({
+            categoryId,
+            color,
+            description,
+            icon,
+            updatedAt: dayjs().tz(timezone).toDate(),
+            maxStreaks,
+            reminderDays,
+            reminderFrequency,
+            title,
+            timezone,
+            reminderTime,
+            reminderEnabled,
+          })
+          .where(
+            and(eq(habits.id, habitId), eq(habits.authorId, ctx.session.id))
+          )
+          .returning();
+
+        if (!habit) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to update habit. Internal server error.",
+          });
+        }
+
+        return habit;
       }
-
-      const [habit] = await ctx.db
-        .update(habits)
-        .set(input)
-        .where(
-          and(eq(habits.id, input.habitId), eq(habits.authorId, ctx.session.id))
-        )
-        .returning();
-
-      if (!habit) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to update habit. Internal server error.",
-        });
-      }
-
-      return habit;
-    }),
+    ),
   createHabitOption: protectedProcedure
     .input(
       z.object({

@@ -89,11 +89,13 @@ export default function HabitContainer() {
           />
         )}
       </View>
-      <HabitSheet
-        sheetId={sheetId}
-        setSheetId={setSheetId}
-        ref={bottomSheetModalRef}
-      />
+      {sheetId && (
+        <HabitSheet
+          sheetId={sheetId}
+          setSheetId={setSheetId}
+          ref={bottomSheetModalRef}
+        />
+      )}
     </>
   );
 }
