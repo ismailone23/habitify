@@ -4,6 +4,7 @@ import { useFonts } from "expo-font";
 import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import * as TaskManager from "expo-task-manager";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -18,13 +19,33 @@ import TRPcProvider from "@/providers/TRPcProvider";
 Notifications.setNotificationHandler({
   // eslint-disable-next-line @typescript-eslint/require-await
   handleNotification: async () => ({
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
     shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
     shouldShowList: true,
   }),
 });
+const BACKGROUND_NOTIFICATION_TASK = "BACKGROUND-NOTIFICATION-TASK";
+
+TaskManager.defineTask(
+  BACKGROUND_NOTIFICATION_TASK,
+  async ({ data, error, executionInfo }) => {
+    console.log("✅ Received a notification in the background!", {
+      data,
+      error,
+      executionInfo,
+    });
+
+    if (error) {
+      console.error("❌ Background notification task error:", error);
+      return;
+    }
+    return Promise.resolve(); // ✅ explicitly return a Promise
+  }
+);
+
+void Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({

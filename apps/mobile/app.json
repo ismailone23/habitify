@@ -17,6 +17,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "useNextNotificationsApi": true,
       "edgeToEdgeEnabled": true,
       "package": "com.ismailone23.habitly",
       "googleServicesFile": "./google-services.json"
@@ -37,6 +38,7 @@
           "backgroundColor": "#ffffff"
         }
       ],
+      "expo-notifications",
       "@react-native-firebase/app"
     ],
     "experiments": {

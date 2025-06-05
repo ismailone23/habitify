@@ -1,12 +1,6 @@
 import * as Notifications from "expo-notifications";
 import type { ReactNode } from "react";
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 import { registerForPushNotificationsAsync } from "@/lib/notification";
 
@@ -41,21 +35,20 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   const [notification, setNotification] =
     useState<Notifications.Notification | null>(null);
   const [error, setError] = useState<Error | null>(null);
-  const notificationListener = useRef<Notifications.Subscription | null>(null);
-  const responseListener = useRef<Notifications.Subscription | null>(null);
+
   useEffect(() => {
     registerForPushNotificationsAsync().then(
       (token) => setExpoPushToken(token ?? ""),
       (error) => setError(error)
     );
-
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
+    const notificationListener = Notifications.addNotificationReceivedListener(
+      (notification) => {
         console.log("🔔 Notification Received: ", notification);
         setNotification(notification);
-      });
+      }
+    );
 
-    responseListener.current =
+    const responseListener =
       Notifications.addNotificationResponseReceivedListener((response) => {
         console.log(
           "🔔 Notification Response: ",
@@ -65,11 +58,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       });
 
     return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current!
-      );
-
-      Notifications.removeNotificationSubscription(responseListener.current!);
+      notificationListener.remove();
+      responseListener.remove();
     };
   }, []);
 

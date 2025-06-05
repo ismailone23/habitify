@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect } from "react";
 import { Text, View } from "react-native";
@@ -22,12 +23,14 @@ export default function Workspace() {
   useEffect(() => {
     const handlePushToken = async () => {
       if (user && !user.expoPushToken && expoPushToken) {
+        console.log("token");
         return await updateUserApi.mutateAsync({ expoPushToken });
       }
       return;
     };
+    console.log("already had token");
     void handlePushToken();
-  }, [expoPushToken, updateUserApi, user, user?.expoPushToken]);
+  }, []);
 
   if (error) {
     <View style={{ paddingHorizontal: 16 }}>
