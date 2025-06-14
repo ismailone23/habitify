@@ -37,24 +37,24 @@ export const habitRouter = router({
           message: "Internal Server Error. Failed to Create Habit.",
         });
       }
-      // if (ctx.user.expoPushToken) {
-      //   try {
-      //     await scheduleReminder({
-      //       ...input.frequency,
-      //       timezone: input.timezone,
-      //       pushtoken: ctx.user.expoPushToken,
-      //       description: input.description,
-      //       name: input.name,
-      //     });
-      //     console.log("scheduled");
-      //   } catch (error: any) {
-      //     console.log(error);
-      //     throw new TRPCError({
-      //       code: "INTERNAL_SERVER_ERROR",
-      //       message: `${error}. scheduling`,
-      //     });
-      //   }
-      // }
+      if (ctx.user.expoPushToken) {
+        try {
+          await scheduleReminder({
+            ...input.frequency,
+            timezone: input.timezone,
+            pushtoken: ctx.user.expoPushToken,
+            description: input.description,
+            name: input.name,
+          });
+          console.log("scheduled");
+        } catch (error: any) {
+          console.log(error);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `${error}. scheduling`,
+          });
+        }
+      }
       return newHabit;
     }),
   updateHabit: protectedProcedure
