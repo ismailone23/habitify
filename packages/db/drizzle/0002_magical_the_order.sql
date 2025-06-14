@@ -1,0 +1,1 @@
+ALTER TABLE "habit" ALTER COLUMN "frequency" SET NOT NULL;

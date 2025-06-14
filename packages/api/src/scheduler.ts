@@ -1,0 +1,113 @@
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+
+import { qstashClient } from "./qstash";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+interface ReminderPayload {
+  name: string;
+  description: string | null;
+  pushtoken: string;
+}
+
+const BASE_URL = "http://192.168.0.139:3000";
+
+export async function scheduleReminder({
+  targetCount,
+  type,
+  targetDays,
+  time,
+  timezone,
+  pushtoken,
+  description,
+  name,
+}: {
+  type: "custom" | "daily" | "weekly";
+  targetCount: number;
+  time: string;
+  targetDays?:
+    | ("sun" | "mon" | "tue" | "wed" | "thu" | "fri" | "sat")[]
+    | null
+    | undefined;
+  timezone: string;
+  pushtoken: string;
+  description: string | null;
+  name: string;
+}) {
+  const [hourStr, minuteStr] = time.split(":");
+
+  // Validate first
+  if (!hourStr || !minuteStr) {
+    throw new Error(`Invalid reminderTime format: "${time}"`);
+  }
+
+  const hour = Number(hourStr);
+  const minute = Number(minuteStr);
+
+  if (isNaN(hour) || isNaN(minute)) {
+    throw new Error(`Invalid time value: "${time}"`);
+  }
+
+  const now = dayjs().tz(timezone);
+  const scheduledTime = now.hour(hour).minute(minute).second(0);
+
+  // Get UTC time components
+  const utcHour = scheduledTime.utc().hour();
+  const utcMinute = scheduledTime.utc().minute();
+
+  const baseBody: ReminderPayload = { description, name, pushtoken };
+
+  const dayMap: Record<string, string> = {
+    Sunday: "0",
+    Monday: "1",
+    Tuesday: "2",
+    Wednesday: "3",
+    Thursday: "4",
+    Friday: "5",
+    Saturday: "6",
+  };
+
+  if (type === "daily") {
+    try {
+      await qstashClient.publishJSON({
+        url: `${BASE_URL}/api/reminder`,
+        body: baseBody,
+        schedule: `cron(${utcMinute} ${utcHour} * * ? *)`,
+      });
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  } else if (type === "weekly") {
+    const firstDay = "Monday";
+    const dayOfWeek = dayMap[firstDay] ?? "1"; // Monday = 1
+    try {
+      await qstashClient.publishJSON({
+        url: `${BASE_URL}/api/reminder`,
+        body: baseBody,
+        schedule: `cron(${utcMinute} ${utcHour} ? * ${dayOfWeek} *)`,
+      });
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  } else if (type === "custom" && targetDays) {
+    try {
+      await Promise.all(
+        targetDays.map(async (day) => {
+          const dayOfWeek = dayMap[day];
+          if (!dayOfWeek) return;
+
+          await qstashClient.publishJSON({
+            url: `${BASE_URL}/api/reminder`,
+            body: baseBody,
+            schedule: `cron(${utcMinute} ${utcHour} ? * ${dayOfWeek} *)`,
+          });
+        })
+      );
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+}
