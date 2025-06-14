@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
+import { BodyInit, Client } from "@upstash/qstash";
 
 import { qstashClient } from "./qstash";
 
@@ -58,8 +59,6 @@ export async function scheduleReminder({
   const utcHour = scheduledTime.utc().hour();
   const utcMinute = scheduledTime.utc().minute();
 
-  const baseBody: ReminderPayload = { description, name, pushtoken };
-
   const dayMap: Record<string, string> = {
     Sunday: "0",
     Monday: "1",
@@ -72,22 +71,23 @@ export async function scheduleReminder({
 
   if (type === "daily") {
     try {
-      await qstashClient.publishJSON({
-        url: `${BASE_URL}/api/reminder`,
-        body: baseBody,
-        schedule: `cron(${utcMinute} ${utcHour} * * ? *)`,
+      await qstashClient.schedules.create({
+        destination: `${BASE_URL}/api/reminder`,
+        // body: {},
+        body: `{\"pushToken\":\"${pushtoken}\",\"title\":\"${name}\",\"body\":\"${description}\"}`,
+        cron: `cron(${utcMinute} ${utcHour} * * ? *)`,
       });
     } catch (error: any) {
       throw new Error(error);
     }
   } else if (type === "weekly") {
-    const firstDay = "Monday";
-    const dayOfWeek = dayMap[firstDay] ?? "1"; // Monday = 1
+    const firstDay = new Date().getDay();
+    const dayOfWeek = dayMap[firstDay];
     try {
-      await qstashClient.publishJSON({
-        url: `${BASE_URL}/api/reminder`,
-        body: baseBody,
-        schedule: `cron(${utcMinute} ${utcHour} ? * ${dayOfWeek} *)`,
+      await qstashClient.schedules.create({
+        destination: `${BASE_URL}/api/reminder`,
+        body: `{\"pushToken\":\"${pushtoken}\",\"title\":\"${name}\",\"body\":\"${description}\"}`,
+        cron: `cron(${utcMinute} ${utcHour} ? * ${dayOfWeek} *)`,
       });
     } catch (error: any) {
       throw new Error(error);
@@ -99,10 +99,10 @@ export async function scheduleReminder({
           const dayOfWeek = dayMap[day];
           if (!dayOfWeek) return;
 
-          await qstashClient.publishJSON({
-            url: `${BASE_URL}/api/reminder`,
-            body: baseBody,
-            schedule: `cron(${utcMinute} ${utcHour} ? * ${dayOfWeek} *)`,
+          await qstashClient.schedules.create({
+            destination: `${BASE_URL}/api/reminder`,
+            body: `{\"pushToken\":\"${pushtoken}\",\"title\":\"${name}\",\"body\":\"${description}\"}`,
+            cron: `cron(${utcMinute} ${utcHour} ? * ${dayOfWeek} *)`,
           });
         })
       );
