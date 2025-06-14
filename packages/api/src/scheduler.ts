@@ -75,7 +75,7 @@ export async function scheduleReminder({
         destination: `${BASE_URL}/api/reminder`,
         // body: {},
         body: `{\"pushToken\":\"${pushtoken}\",\"title\":\"${name}\",\"body\":\"${description}\"}`,
-        cron: `cron(${utcMinute} ${utcHour} * * ? *)`,
+        cron: `${utcMinute} ${utcHour} * * *`,
       });
     } catch (error: any) {
       throw new Error(error);
@@ -87,7 +87,7 @@ export async function scheduleReminder({
       await qstashClient.schedules.create({
         destination: `${BASE_URL}/api/reminder`,
         body: `{\"pushToken\":\"${pushtoken}\",\"title\":\"${name}\",\"body\":\"${description}\"}`,
-        cron: `cron(${utcMinute} ${utcHour} ? * ${dayOfWeek} *)`,
+        cron: `${utcMinute} ${utcHour} * * ${dayOfWeek}`,
       });
     } catch (error: any) {
       throw new Error(error);
@@ -102,7 +102,7 @@ export async function scheduleReminder({
           await qstashClient.schedules.create({
             destination: `${BASE_URL}/api/reminder`,
             body: `{\"pushToken\":\"${pushtoken}\",\"title\":\"${name}\",\"body\":\"${description}\"}`,
-            cron: `cron(${utcMinute} ${utcHour} ? * ${dayOfWeek} *)`,
+            cron: `${utcMinute} ${utcHour} * * ${dayOfWeek}`,
           });
         })
       );
